@@ -11,7 +11,6 @@ import { JwtResponse } from '../../core/models/jwt-response.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
 })
 export class Login implements OnInit {
   private authService = inject(AuthService);
