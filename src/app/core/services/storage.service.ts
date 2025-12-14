@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from "@angular/core"
-import { User } from "../user.model";
-import { JwtResponse } from "../jwt-response.model";
+import { User } from "../models/user.model";
+import { JwtResponse } from "../models/jwt-response.model";
 
 const USER_KEY ='auth-user'
 const TOKEN_KEY='auth-token'

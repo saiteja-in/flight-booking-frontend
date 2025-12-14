@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { StorageService } from './storage.service';
-import { JwtResponse } from '../jwt-response.model';
+import { JwtResponse } from '../models/jwt-response.model';
 
 const AUTH_API = 'http://localhost:8765/api/v1.0/auth';
 
