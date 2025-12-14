@@ -1,8 +1,68 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { StorageService } from './storage.service';
+import { JwtResponse } from '../jwt-response.model';
+
+const AUTH_API = 'http://localhost:8765/api/v1.0/auth';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable({
-  providedIn:'root'
+  providedIn: 'root',
 })
-export class AuthService{
-  
+export class AuthService {
+  private http = inject(HttpClient);
+  private storageService = inject(StorageService);
+
+  login(username: string, password: string): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(
+      AUTH_API + '/signin',
+      {
+        username,
+        password,
+      },
+      httpOptions
+    ).pipe(
+      map((response: JwtResponse) => {
+        // Store user and token separately
+        this.storageService.saveUserAndToken(response);
+        return response;
+      })
+    );
+  }
+
+  register(username: string, email: string, password: string, roles?: Set<string>): Observable<any> {
+    const body: any = {
+      username,
+      email,
+      password,
+    };
+
+    // Add roles if provided
+    if (roles && roles.size > 0) {
+      body.role = Array.from(roles);
+    }
+
+    return this.http.post(
+      AUTH_API + '/signup',
+      body,
+      httpOptions
+    );
+  }
+
+  logout(): Observable<any> {
+    return this.http.post(AUTH_API + '/signout', {}, httpOptions);
+  }
+
+  // Expose storage service signals for convenience
+  get currentUser() {
+    return this.storageService.currentUser;
+  }
+
+  get isLoggedIn() {
+    return this.storageService.isLoggedIn;
+  }
 }
