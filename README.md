@@ -1,59 +1,52 @@
-# FlightManagementFrontend
+# Flight Booking Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+An Angular 21 single‑page application for a **Flight Booking System**.  
+It provides authentication (login/register), role‑based dashboards (user/admin), profile pages, and a modern Tailwind‑styled UI to search for flights between airports and view results.
 
-## Development server
+## Tech Stack
 
-To start a local development server, run:
+- **Framework**: Angular 21 (standalone components, signals)
+- **Styling**: Tailwind CSS + minimal custom styles
+- **HTTP / Auth**: Angular `HttpClient`, interceptor, JWT‑based auth
 
-```bash
-ng serve
-```
+## Prerequisites
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Node.js (LTS recommended)
+- npm (comes with Node)
+- Angular CLI (globally, optional but useful):
 
 ```bash
-ng generate --help
+npm install -g @angular/cli
 ```
 
-## Building
+## Install Dependencies
 
-To build the project run:
+From the project root:
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Run the App (Dev)
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+Then open `http://localhost:4200/` in your browser. The app will live‑reload on code changes.
 
-For end-to-end (e2e) testing, run:
+## Build for Production
 
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The optimized build will be generated in the `dist/` folder.
 
-## Additional Resources
+## Run Unit Tests
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm test
+```
+
+> This uses the configured Angular/Vitest test setup in the project.
