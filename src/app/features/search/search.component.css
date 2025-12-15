@@ -1,0 +1,8 @@
+.hidden {
+  display: none;
+}
+
+/* Ensure dropdowns layer above other content */
+.dropdown-panel {
+  z-index: 20;
+}

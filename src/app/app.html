@@ -15,6 +15,13 @@
              class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
             Home
           </a>
+          <a routerLink="/search" routerLinkActive="text-blue-600 font-medium" [routerLinkActiveOptions]="{exact: true}"
+             class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+             Search Flights
+          </a>
+          <!-- <li class="nav-item">
+            <a routerLink="/search" class="nav-link">Search Flights</a>
+          </li> -->
           @if (showAdminBoard()) {
             <a routerLink="/admin" routerLinkActive="text-blue-600 font-medium"
                class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">

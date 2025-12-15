@@ -1,0 +1,132 @@
+<div class="min-h-[80vh] bg-slate-50 py-10">
+  <div class="mx-auto max-w-5xl px-4">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-semibold text-slate-800">Search Flights</h1>
+      <p class="mt-2 text-slate-500">Choose your route and date to find available flights.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="rounded-xl bg-white p-6 shadow-md">
+      <div class="grid gap-6 md:grid-cols-3">
+        <!-- Origin dropdown -->
+        <div class="relative">
+          <label class="mb-2 block text-sm font-medium text-slate-700">Origin airport</label>
+          <div class="relative">
+            <button type="button" (click)="originOpen = !originOpen"
+              class="flex w-full items-center justify-between rounded-md border border-slate-200 bg-slate-100 px-4 py-3 text-left text-slate-800 transition hover:border-slate-300">
+              <span class="truncate">{{ originLabel() }}</span>
+              <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              class="absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto rounded-md border border-slate-200 bg-white shadow-lg transition"
+              [class.hidden]="!originOpen">
+              <button type="button" *ngFor="let airport of airports" (click)="selectAirport('originAirport', airport)"
+                class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100">
+                <span>{{ airport.label }}</span>
+              </button>
+            </div>
+          </div>
+          @if (submitted() && form.controls.originAirport.invalid) {
+            <p class="mt-2 text-sm text-red-600">Origin airport is required.</p>
+          }
+        </div>
+
+        <!-- Destination dropdown -->
+        <div class="relative">
+          <label class="mb-2 block text-sm font-medium text-slate-700">Destination airport</label>
+          <div class="relative">
+            <button type="button" (click)="destinationOpen = !destinationOpen"
+              class="flex w-full items-center justify-between rounded-md border border-slate-200 bg-slate-100 px-4 py-3 text-left text-slate-800 transition hover:border-slate-300">
+              <span class="truncate">{{ destinationLabel() }}</span>
+              <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              class="absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto rounded-md border border-slate-200 bg-white shadow-lg transition"
+              [class.hidden]="!destinationOpen">
+              <button type="button" *ngFor="let airport of airports" (click)="selectAirport('destinationAirport', airport)"
+                class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100">
+                <span>{{ airport.label }}</span>
+              </button>
+            </div>
+          </div>
+          @if (submitted() && form.controls.destinationAirport.invalid) {
+            <p class="mt-2 text-sm text-red-600">Destination airport is required.</p>
+          }
+        </div>
+
+        <!-- Date -->
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-700">Flight date</label>
+          <input type="date" formControlName="flightDate"
+            class="block w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm outline-none transition hover:border-slate-300 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-300" />
+          @if (submitted() && form.controls.flightDate.invalid) {
+            <p class="mt-2 text-sm text-red-600">Flight date is required.</p>
+          }
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center gap-3">
+        <button type="submit"
+          class="inline-flex items-center rounded-md bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:bg-indigo-300"
+          [disabled]="loading()">
+          @if (loading()) {
+            <svg class="mr-2 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+          }
+          Search flights
+        </button>
+        @if (error()) {
+          <p class="text-sm text-red-600">{{ error() }}</p>
+        }
+      </div>
+    </form>
+
+    <div class="mt-8 rounded-xl bg-white p-6 shadow-md">
+      @if (loading()) {
+        <p class="text-slate-600">Loading flights...</p>
+      } @else if (results().length === 0) {
+        <p class="text-slate-500">No flights to show yet. Try searching for a route.</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Flight</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Airline</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Route</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Date</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Times</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Fare</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Seats</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr *ngFor="let flight of results()">
+                <td class="px-4 py-3 text-sm font-semibold text-slate-800">{{ flight.flightNumber }}</td>
+                <td class="px-4 py-3 text-sm text-slate-700">{{ flight.airline }}</td>
+                <td class="px-4 py-3 text-sm text-slate-700">
+                  {{ flight.originAirport }} → {{ flight.destinationAirport }}
+                </td>
+                <td class="px-4 py-3 text-sm text-slate-700">{{ flight.flightDate }}</td>
+                <td class="px-4 py-3 text-sm text-slate-700">
+                  {{ flight.departureTime }} - {{ flight.arrivalTime }}
+                </td>
+                <td class="px-4 py-3 text-sm text-slate-700">₹{{ flight.fare }}</td>
+                <td class="px-4 py-3 text-sm text-slate-700">
+                  {{ flight.availableSeats }} / {{ flight.totalSeats }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

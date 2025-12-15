@@ -7,6 +7,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { BoardUserComponent } from './features/board-user/board-user.component';
 import { BoardAdminComponent } from './features/board-admin/board-admin.component';
 import { roleGuard } from './core/guards/role.guard';
+import { SearchComponent } from './features/search/search.component';
 
 export const routes: Routes = [
   {path:'home',component:HomeComponent},
@@ -14,6 +15,7 @@ export const routes: Routes = [
   {path:'register',component:RegisterComponent},
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'user', component: BoardUserComponent, canActivate: [authGuard] },
+  { path: 'search', component: SearchComponent },
   {
     path: 'admin',
     component: BoardAdminComponent,
