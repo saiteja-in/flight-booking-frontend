@@ -12,6 +12,7 @@ import { SearchComponent } from './features/search/search.component';
 export const routes: Routes = [
   {path:'home',component:HomeComponent},
   {path:'login',component:Login},
+  {path:'oauth2/callback',component:Login}, // OAuth2 callback route
   {path:'register',component:RegisterComponent},
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'user', component: BoardUserComponent, canActivate: [authGuard] },

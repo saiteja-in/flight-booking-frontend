@@ -80,6 +80,22 @@
           Login
         </button>
       </form>
+
+      <!-- Divider -->
+      <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white text-gray-500">Or continue with</span>
+        </div>
+      </div>
+
+      <!-- OAuth Buttons -->
+      <div class="space-y-3">
+        <!-- Google Sign-In Button -->
+        <div id="google-signin-button" class="w-full"></div>
+      </div>
       } @else {
       <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm text-center">
         Logged in as {{ roles().join(', ') }}

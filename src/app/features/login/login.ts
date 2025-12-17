@@ -1,10 +1,19 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { JwtResponse } from '../../core/models/jwt-response.model';
+
+// Declared in index.html via Google Identity Services script
+declare function handleGoogleCredentialResponse(response: any): void;
+
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 @Component({
   selector: 'app-login',
@@ -12,17 +21,25 @@ import { JwtResponse } from '../../core/models/jwt-response.model';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
 })
-export class Login implements OnInit {
+export class Login implements OnInit, OnDestroy, AfterViewInit {
   private authService = inject(AuthService);
   private storageService = inject(StorageService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   loginForm: FormGroup;
   isLoggedIn = signal(false);
   isLoginFailed = signal(false);
   errorMessage = signal('');
   roles = signal<string[]>([]);
+  // TODO: Replace with your actual Google OAuth2 Client ID from Google Cloud Console
+  // Get it from: https://console.cloud.google.com/apis/credentials
+  googleClientId = '718395966986-4i5t3n288i9jvbpcdq6mnruelggnhlth.apps.googleusercontent.com';
+
+  private googleSignInListener?: (event: CustomEvent) => void;
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -39,6 +56,103 @@ export class Login implements OnInit {
         this.roles.set(user.roles);
       }
     }
+
+    // Check for OAuth2 callback
+    this.route.queryParams.subscribe(params => {
+      if (params['token']) {
+        // Handle OAuth2 callback from backend
+        const jwtResponse: JwtResponse = {
+          token: params['token'],
+          type: 'Bearer',
+          id: parseInt(params['id'] || '0'),
+          username: params['username'] || '',
+          email: params['email'] || '',
+          roles: params['roles'] ? params['roles'].split(',') : []
+        };
+        this.storageService.saveUserAndToken(jwtResponse);
+        this.isLoginFailed.set(false);
+        this.isLoggedIn.set(true);
+        this.roles.set(jwtResponse.roles);
+        this.router.navigate(['/home']);
+      } else if (params['error']) {
+        this.errorMessage.set(params['error']);
+        this.isLoginFailed.set(true);
+      }
+    });
+
+    // Listen for Google Sign-In event (only in browser)
+    if (this.isBrowser) {
+      this.googleSignInListener = (event: CustomEvent) => {
+        const credential = event.detail;
+        this.handleGoogleSignIn(credential);
+      };
+      window.addEventListener('googleSignIn', this.googleSignInListener as EventListener);
+    }
+
+    // Initialize Google Sign-In will be done in ngAfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize Google Sign-In when the library is loaded and view is ready (only in browser)
+    if (!this.isBrowser) {
+      return;
+    }
+
+    if (window.google) {
+      this.initializeGoogleSignIn();
+    } else {
+      // Wait for Google library to load
+      const checkGoogle = setInterval(() => {
+        if (window.google) {
+          this.initializeGoogleSignIn();
+          clearInterval(checkGoogle);
+        }
+      }, 100);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.isBrowser && this.googleSignInListener) {
+      window.removeEventListener('googleSignIn', this.googleSignInListener as EventListener);
+    }
+  }
+
+  private initializeGoogleSignIn(): void {
+    if (!this.isBrowser || !window.google || !this.googleClientId) {
+      return;
+    }
+
+    window.google.accounts.id.initialize({
+      client_id: this.googleClientId,
+      callback: (response: any) => {
+        // This will trigger the global handler which dispatches the event
+        if (typeof handleGoogleCredentialResponse === 'function') {
+          handleGoogleCredentialResponse(response);
+        }
+      }
+    });
+
+    // Render the button programmatically after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      if (!this.isBrowser) return;
+
+      const buttonContainer = document.getElementById('google-signin-button');
+      if (buttonContainer && window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          window.google.accounts.id.renderButton(buttonContainer, {
+            type: 'standard',
+            shape: 'rectangular',
+            theme: 'outline',
+            text: 'signin_with',
+            size: 'large',
+            logo_alignment: 'left',
+            width: '100%'
+          });
+        } catch (error) {
+          console.error('Error rendering Google Sign-In button:', error);
+        }
+      }
+    }, 200);
   }
 
   onSubmit(): void {
@@ -58,6 +172,21 @@ export class Login implements OnInit {
       },
       error: err => {
         this.errorMessage.set(err.error?.message || 'Login failed');
+        this.isLoginFailed.set(true);
+      }
+    });
+  }
+
+  handleGoogleSignIn(credential: string): void {
+    this.authService.loginWithGoogle(credential).subscribe({
+      next: (jwtResponse: JwtResponse) => {
+        this.isLoginFailed.set(false);
+        this.isLoggedIn.set(true);
+        this.roles.set(jwtResponse.roles);
+        this.router.navigate(['/home']);
+      },
+      error: err => {
+        this.errorMessage.set(err.error?.message || 'Google Sign-In failed');
         this.isLoginFailed.set(true);
       }
     });
