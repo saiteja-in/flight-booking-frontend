@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './app.html'
+  templateUrl: './app.html',
 })
 export class App implements OnInit, OnDestroy {
   private storageService = inject(StorageService);
@@ -42,17 +42,17 @@ export class App implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout().subscribe({
-      next: res => {
+      next: (res) => {
         console.log(res);
         this.storageService.clean();
         this.router.navigate(['/home']);
       },
-      error: err => {
+      error: (err) => {
         console.log(err);
         // Clean storage even if logout API call fails
         this.storageService.clean();
         this.router.navigate(['/home']);
-      }
+      },
     });
   }
 }

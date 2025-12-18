@@ -57,6 +57,22 @@ export class AuthService {
     return this.http.post(AUTH_API + '/signout', {}, httpOptions);
   }
 
+  loginWithGoogle(idToken: string): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(
+      AUTH_API + '/oauth/google',
+      {
+        idToken,
+      },
+      httpOptions
+    ).pipe(
+      map((response: JwtResponse) => {
+        // Store user and token separately
+        this.storageService.saveUserAndToken(response);
+        return response;
+      })
+    );
+  }
+
   // Expose storage service signals for convenience
   get currentUser() {
     return this.storageService.currentUser;

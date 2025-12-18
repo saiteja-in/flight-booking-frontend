@@ -1,0 +1,38 @@
+<div class="sample-route-container">
+  <h2>Sample Form</h2>
+  
+  <form [formGroup]="nameForm" (ngSubmit)="onSubmit()" class="sample-form">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input 
+        type="text" 
+        id="name" 
+        formControlName="name" 
+        placeholder="Enter your name"
+        class="form-control"
+        [class.error]="nameForm.get('name')?.invalid && nameForm.get('name')?.touched">
+      <div *ngIf="nameForm.get('name')?.invalid && nameForm.get('name')?.touched" class="error-message">
+        Name is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="age">Age:</label>
+      <input 
+        type="number" 
+        id="age" 
+        formControlName="age" 
+        placeholder="Enter your age"
+        class="form-control"
+        [class.error]="nameForm.get('age')?.invalid && nameForm.get('age')?.touched">
+      <div *ngIf="nameForm.get('age')?.invalid && nameForm.get('age')?.touched" class="error-message">
+        <span *ngIf="nameForm.get('age')?.errors?.['required']">Age is required</span>
+        <span *ngIf="nameForm.get('age')?.errors?.['min']">Age must be at least 1</span>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="nameForm.invalid">
+      Submit
+    </button>
+  </form>
+</div>

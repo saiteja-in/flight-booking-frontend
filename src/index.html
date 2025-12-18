@@ -6,6 +6,16 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    // Global function to handle Google Sign-In callback
+    function handleGoogleCredentialResponse(response) {
+      // Store the credential in sessionStorage so Angular can access it
+      sessionStorage.setItem('googleCredential', response.credential);
+      // Dispatch a custom event that Angular can listen to
+      window.dispatchEvent(new CustomEvent('googleSignIn', { detail: response.credential }));
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>
