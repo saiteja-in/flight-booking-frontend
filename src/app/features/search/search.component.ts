@@ -29,6 +29,7 @@ export class SearchComponent {
 
   readonly originLabel = signal('Select airport');
   readonly destinationLabel = signal('Select airport');
+  readonly minDate = new Date().toISOString().split('T')[0];
 
   originOpen = false;
   destinationOpen = false;

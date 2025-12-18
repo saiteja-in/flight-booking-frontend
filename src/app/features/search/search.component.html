@@ -60,7 +60,7 @@
         <!-- Date -->
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-700">Flight date</label>
-          <input type="date" formControlName="flightDate"
+          <input type="date" formControlName="flightDate" [min]="minDate"
             class="block w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm outline-none transition hover:border-slate-300 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-300" />
           @if (submitted() && form.controls.flightDate.invalid) {
             <p class="mt-2 text-sm text-red-600">Flight date is required.</p>
