@@ -35,8 +35,6 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
   isLoginFailed = signal(false);
   errorMessage = signal('');
   roles = signal<string[]>([]);
-  // TODO: Replace with your actual Google OAuth2 Client ID from Google Cloud Console
-  // Get it from: https://console.cloud.google.com/apis/credentials
   googleClientId = '718395966986-4i5t3n288i9jvbpcdq6mnruelggnhlth.apps.googleusercontent.com';
 
   private googleSignInListener?: (event: CustomEvent) => void;
@@ -80,7 +78,6 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    // Listen for Google Sign-In event (only in browser)
     if (this.isBrowser) {
       this.googleSignInListener = (event: CustomEvent) => {
         const credential = event.detail;
@@ -89,11 +86,9 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
       window.addEventListener('googleSignIn', this.googleSignInListener as EventListener);
     }
 
-    // Initialize Google Sign-In will be done in ngAfterViewInit
   }
 
   ngAfterViewInit(): void {
-    // Initialize Google Sign-In when the library is loaded and view is ready (only in browser)
     if (!this.isBrowser) {
       return;
     }
