@@ -32,6 +32,18 @@ export class App implements OnInit, OnDestroy {
     this.eventBusSub = this.eventBusService.on('logout', () => {
       this.logout();
     });
+
+    // Validate token on app initialization to sync state
+    // If user data exists in localStorage but cookie is invalid/missing, clear it
+    if (this.storageService.isLoggedIn()) {
+      this.authService.validateToken().subscribe({
+        error: () => {
+          // Token invalid or missing - state is out of sync, clear localStorage
+          // This handles cases where cookie was manually deleted or expired
+          console.log('Token validation failed on app init - clearing localStorage');
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

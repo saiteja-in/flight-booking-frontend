@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
 import { StorageService } from './storage.service';
 import { JwtResponse } from '../models/jwt-response.model';
 
@@ -55,6 +55,20 @@ export class AuthService {
 
   logout(): Observable<any> {
     return this.http.post(AUTH_API + '/signout', {}, httpOptions);
+  }
+
+  validateToken(): Observable<boolean> {
+    return this.http.get<{ message: string }>(AUTH_API + '/validate', {
+      ...httpOptions,
+      withCredentials: true
+    }).pipe(
+      map(() => true),
+      catchError(() => {
+        // Token is invalid or missing
+        this.storageService.clean();
+        return of(false);
+      })
+    );
   }
 
   loginWithGoogle(idToken: string): Observable<JwtResponse> {
