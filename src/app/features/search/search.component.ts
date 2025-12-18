@@ -1,7 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FlightSearchService, FlightScheduleResponse } from '../../core/services/flight-search.service';
+import { StorageService } from '../../core/services/storage.service';
 import { AirportOption, AIRPORTS } from '../../shared/airports';
 
 @Component({
@@ -14,6 +16,8 @@ import { AirportOption, AIRPORTS } from '../../shared/airports';
 export class SearchComponent {
   private readonly fb = inject(FormBuilder);
   private readonly flightSearchService = inject(FlightSearchService);
+  private readonly router = inject(Router);
+  private readonly storageService = inject(StorageService);
 
   readonly airports = AIRPORTS;
   readonly form = this.fb.group({
@@ -83,5 +87,19 @@ export class SearchComponent {
   private getLabelForCode(code?: string | null): string {
     if (!code) return 'Select airport';
     return this.airports.find((a) => a.code === code)?.label ?? code;
+  }
+
+  bookFlight(flight: FlightScheduleResponse) {
+    // Check if user is authenticated
+    if (!this.storageService.isLoggedIn()) {
+      // Redirect to login with returnUrl to come back after login
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: `/booking/${flight.scheduleId}` }
+      });
+      return;
+    }
+
+    // Navigate to booking page with scheduleId
+    this.router.navigate(['/booking', flight.scheduleId]);
   }
 }

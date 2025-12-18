@@ -9,6 +9,7 @@ import { BoardAdminComponent } from './features/board-admin/board-admin.componen
 import { roleGuard } from './core/guards/role.guard';
 import { SearchComponent } from './features/search/search.component';
 import { SampleRoute } from './features/sample-route/sample-route';
+import { BookingComponent } from './features/booking/booking.component';
 
 export const routes: Routes = [
   {path:'home',component:HomeComponent},
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'user', component: BoardUserComponent, canActivate: [authGuard] },
   { path: 'search', component: SearchComponent },
+  { path: 'booking/:scheduleId', component: BookingComponent, canActivate: [authGuard] },
   { path: 'sample-route', component: SampleRoute },
   {
     path: 'admin',

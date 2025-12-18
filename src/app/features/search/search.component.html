@@ -88,43 +88,80 @@
       </div>
     </form>
 
-    <div class="mt-8 rounded-xl bg-white p-6 shadow-md">
+    <div class="mt-8">
       @if (loading()) {
-        <p class="text-slate-600">Loading flights...</p>
+        <div class="rounded-xl bg-white p-6 shadow-md">
+          <p class="text-slate-600">Loading flights...</p>
+        </div>
       } @else if (results().length === 0) {
-        <p class="text-slate-500">No flights to show yet. Try searching for a route.</p>
+        <div class="rounded-xl bg-white p-6 shadow-md">
+          <p class="text-slate-500">No flights to show yet. Try searching for a route.</p>
+        </div>
       } @else {
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-200">
-            <thead class="bg-slate-50">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Flight</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Airline</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Route</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Date</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Times</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Fare</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Seats</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              <tr *ngFor="let flight of results()">
-                <td class="px-4 py-3 text-sm font-semibold text-slate-800">{{ flight.flightNumber }}</td>
-                <td class="px-4 py-3 text-sm text-slate-700">{{ flight.airline }}</td>
-                <td class="px-4 py-3 text-sm text-slate-700">
-                  {{ flight.originAirport }} → {{ flight.destinationAirport }}
-                </td>
-                <td class="px-4 py-3 text-sm text-slate-700">{{ flight.flightDate }}</td>
-                <td class="px-4 py-3 text-sm text-slate-700">
-                  {{ flight.departureTime }} - {{ flight.arrivalTime }}
-                </td>
-                <td class="px-4 py-3 text-sm text-slate-700">₹{{ flight.fare }}</td>
-                <td class="px-4 py-3 text-sm text-slate-700">
-                  {{ flight.availableSeats }} / {{ flight.totalSeats }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          @for (flight of results(); track flight.scheduleId) {
+            <div class="rounded-xl bg-white p-6 shadow-md transition hover:shadow-lg">
+              <!-- Flight Header -->
+              <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+                <div>
+                  <h3 class="text-lg font-semibold text-slate-800">{{ flight.flightNumber }}</h3>
+                  <p class="text-sm text-slate-600">{{ flight.airline }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-2xl font-bold text-indigo-600">₹{{ flight.fare }}</p>
+                  <p class="text-xs text-slate-500">per person</p>
+                </div>
+              </div>
+
+              <!-- Route -->
+              <div class="mb-4">
+                <div class="flex items-center gap-2">
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-slate-700">{{ flight.originAirport }}</p>
+                    <p class="text-xs text-slate-500">{{ flight.departureTime }}</p>
+                  </div>
+                  <div class="flex items-center">
+                    <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 text-right">
+                    <p class="text-sm font-medium text-slate-700">{{ flight.destinationAirport }}</p>
+                    <p class="text-xs text-slate-500">{{ flight.arrivalTime }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Flight Details -->
+              <div class="mb-4 space-y-2 text-sm text-slate-600">
+                <div class="flex items-center justify-between">
+                  <span>Date:</span>
+                  <span class="font-medium text-slate-800">{{ flight.flightDate }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Available Seats:</span>
+                  <span class="font-medium text-slate-800">{{ flight.availableSeats }} / {{ flight.totalSeats }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Status:</span>
+                  <span class="font-medium text-slate-800">{{ flight.status }}</span>
+                </div>
+              </div>
+
+              <!-- Book Button -->
+              <button
+                type="button"
+                (click)="bookFlight(flight)"
+                class="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300"
+                [disabled]="flight.availableSeats === 0 ">
+                @if (flight.availableSeats === 0) {
+                  Sold Out
+                } @else {
+                  Book Now
+                }
+              </button>
+            </div>
+          }
         </div>
       }
     </div>
