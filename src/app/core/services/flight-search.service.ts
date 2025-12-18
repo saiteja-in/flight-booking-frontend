@@ -29,7 +29,7 @@ export interface FlightScheduleResponse {
 })
 export class FlightSearchService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080/api/v1.0/flight/admin/search';
+  private readonly baseUrl = 'http://localhost:8765/api/v1.0/flight/admin/search';
 
   searchFlights(payload: FlightSearchRequest): Observable<FlightScheduleResponse[]> {
     return this.http.post<FlightScheduleResponse[]>(this.baseUrl, payload);
