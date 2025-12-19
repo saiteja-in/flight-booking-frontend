@@ -1,0 +1,144 @@
+<div class="min-h-[80vh] bg-slate-50 py-10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-semibold text-slate-800">My Bookings</h1>
+      <p class="mt-2 text-slate-500">View all your flight bookings</p>
+    </div>
+
+    <!-- Error Message -->
+    @if (error()) {
+      <div class="mb-6 rounded-lg bg-red-50 p-4 text-red-800">
+        <div class="flex items-start">
+          <svg class="mr-3 h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p class="font-medium">{{ error() }}</p>
+            <button
+              (click)="loadBookings()"
+              class="mt-2 text-sm text-red-600 underline hover:text-red-800">
+              Try again
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex items-center justify-center py-12">
+        <div class="text-center">
+          <svg class="mx-auto h-12 w-12 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="mt-4 text-slate-600">Loading your bookings...</p>
+        </div>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading() && !error() && bookings().length === 0) {
+      <div class="rounded-xl bg-white p-12 text-center shadow-sm">
+        <svg class="mx-auto h-16 w-16 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-4 text-lg font-semibold text-slate-800">No bookings found</h3>
+        <p class="mt-2 text-slate-500">You haven't made any bookings yet.</p>
+        <button
+          (click)="goToSearch()"
+          class="mt-6 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 transition-colors">
+          Search Flights
+        </button>
+      </div>
+    }
+
+    <!-- Bookings List -->
+    @if (!loading() && !error() && bookings().length > 0) {
+      <div class="space-y-6">
+        @for (booking of bookings(); track booking.bookingId) {
+          <div class="rounded-xl bg-white p-6 shadow-md  transition-shadow">
+            <!-- Booking Header -->
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
+              <div>
+                <div class="flex items-center gap-3">
+                  <h3 class="text-xl font-semibold text-slate-800">Booking #{{ booking.pnr }}</h3>
+                  <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                    Confirmed
+                  </span>
+                </div>
+                <p class="mt-1 text-sm text-slate-500">
+                  Booked on {{ formatDate(booking.createdAt) }}
+                </p>
+              </div>
+              <div class="mt-2 sm:mt-0 text-right">
+                <p class="text-sm text-slate-500">Contact Email</p>
+                <p class="font-medium text-slate-800">{{ booking.contactEmail }}</p>
+              </div>
+            </div>
+
+            <!-- Schedule IDs -->
+            <div class="mb-4">
+              <p class="mb-2 text-sm font-medium text-slate-700">Flight Schedule IDs:</p>
+              <div class="flex flex-wrap gap-2">
+                @for (scheduleId of booking.scheduleIds; track scheduleId) {
+                  <span class="rounded-md bg-blue-50 px-3 py-1 text-sm font-mono text-blue-700">
+                    {{ scheduleId }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Passengers -->
+            <div>
+              <p class="mb-3 text-sm font-medium text-slate-700">Passengers ({{ booking.passengers.length }})</p>
+              <div class="space-y-3">
+                @for (passenger of booking.passengers; track passenger.seatNumber) {
+                  <div class="rounded-lg bg-slate-50 p-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div>
+                        <p class="text-xs text-slate-500">Name</p>
+                        <p class="font-medium text-slate-800">{{ passenger.fullName }}</p>
+                      </div>
+                      <div>
+                        <p class="text-xs text-slate-500">Gender</p>
+                        <p class="font-medium text-slate-800">{{ passenger.gender }}</p>
+                      </div>
+                      <div>
+                        <p class="text-xs text-slate-500">Age</p>
+                        <p class="font-medium text-slate-800">{{ passenger.age }}</p>
+                      </div>
+                      <div>
+                        <p class="text-xs text-slate-500">Seat</p>
+                        <p class="font-medium text-slate-800">{{ passenger.seatNumber }}</p>
+                      </div>
+                      <div>
+                        <p class="text-xs text-slate-500">Meal</p>
+                        <p class="font-medium text-slate-800">{{ passenger.mealOption }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <!-- <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4">
+              <p class="text-xs text-slate-500">
+                Last updated: {{ formatDate(booking.updatedAt) }}
+              </p>
+              <div class="flex gap-2">
+                <button
+                  class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                  View Details
+                </button>
+              </div>
+            </div> -->
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+

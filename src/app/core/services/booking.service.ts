@@ -15,6 +15,25 @@ export interface BookingCreateRequest {
   passengers: PassengerRequest[];
 }
 
+export interface PassengerResponse {
+  fullName: string;
+  gender: string;
+  age: number;
+  seatNumber: string;
+  mealOption: string;
+}
+
+export interface BookingResponse {
+  bookingId: string;
+  pnr: string;
+  contactEmail: string;
+  userId: number;
+  scheduleIds: string[];
+  passengers: PassengerResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,6 +47,16 @@ export class BookingService {
       request,
       {
         responseType: 'text',
+        withCredentials: true, // Include cookies (JWT token)
+      }
+    );
+  }
+
+  getMyBookings(): Observable<BookingResponse[]> {
+    return this.http.get<BookingResponse[]>(
+      `${this.baseUrl}/bookings`,
+      {
+        withCredentials: true, // Include cookies (JWT token)
       }
     );
   }
