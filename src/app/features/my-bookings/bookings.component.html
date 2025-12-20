@@ -64,9 +64,15 @@
               <div>
                 <div class="flex items-center gap-3">
                   <h3 class="text-xl font-semibold text-slate-800">Booking #{{ booking.pnr }}</h3>
-                  <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                    Confirmed
-                  </span>
+                  @if (booking.status === 'CONFIRMED') {
+                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                      Confirmed
+                    </span>
+                  } @else if (booking.status === 'CANCELLED') {
+                    <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                      Cancelled
+                    </span>
+                  }
                 </div>
                 <p class="mt-1 text-sm text-slate-500">
                   Booked on {{ formatDate(booking.createdAt) }}
@@ -78,16 +84,12 @@
               </div>
             </div>
 
-            <!-- Schedule IDs -->
+            <!-- Schedule ID -->
             <div class="mb-4">
-              <p class="mb-2 text-sm font-medium text-slate-700">Flight Schedule IDs:</p>
-              <div class="flex flex-wrap gap-2">
-                @for (scheduleId of booking.scheduleIds; track scheduleId) {
-                  <span class="rounded-md bg-blue-50 px-3 py-1 text-sm font-mono text-blue-700">
-                    {{ scheduleId }}
-                  </span>
-                }
-              </div>
+              <p class="mb-2 text-sm font-medium text-slate-700">Flight Schedule ID:</p>
+              <span class="rounded-md bg-blue-50 px-3 py-1 text-sm font-mono text-blue-700">
+                {{ booking.scheduleId }}
+              </span>
             </div>
 
             <!-- Passengers -->
@@ -124,17 +126,26 @@
             </div>
 
             <!-- Footer -->
-            <!-- <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4">
+            <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4">
               <p class="text-xs text-slate-500">
                 Last updated: {{ formatDate(booking.updatedAt) }}
               </p>
               <div class="flex gap-2">
-                <button
-                  class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                  View Details
-                </button>
+                @if (booking.ticketId && booking.status === 'CONFIRMED') {
+                  <button
+                    (click)="viewTicket(booking.ticketId)"
+                    class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors">
+                    View Ticket
+                  </button>
+                } @else if (booking.ticketId && booking.status === 'CANCELLED') {
+                  <button
+                    disabled
+                    class="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white cursor-not-allowed opacity-60">
+                    View Ticket
+                  </button>
+                }
               </div>
-            </div> -->
+            </div>
           </div>
         }
       </div>

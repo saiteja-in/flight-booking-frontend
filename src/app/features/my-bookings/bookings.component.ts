@@ -57,5 +57,11 @@ export class BookingsComponent implements OnInit {
   goToSearch() {
     this.router.navigate(['/search']);
   }
+
+  viewTicket(ticketId: string) {
+    if (ticketId) {
+      this.router.navigate(['/ticket', ticketId]);
+    }
+  }
 }
 

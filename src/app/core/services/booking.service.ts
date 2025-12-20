@@ -28,10 +28,22 @@ export interface BookingResponse {
   pnr: string;
   contactEmail: string;
   userId: number;
-  scheduleIds: string[];
+  ticketId: string;
+  scheduleId: string;
+  status: string;
   passengers: PassengerResponse[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TicketResponse {
+  ticketId: string;
+  pnr: string;
+  scheduleId: string;
+  passengers: PassengerResponse[];
+  createdAt: string;
+  updatedAt: string;
+  issuedAt: string;
 }
 
 @Injectable({
@@ -55,6 +67,15 @@ export class BookingService {
   getMyBookings(): Observable<BookingResponse[]> {
     return this.http.get<BookingResponse[]>(
       `${this.baseUrl}/bookings`,
+      {
+        withCredentials: true, // Include cookies (JWT token)
+      }
+    );
+  }
+
+  getTicketById(ticketId: string): Observable<TicketResponse> {
+    return this.http.get<TicketResponse>(
+      `${this.baseUrl}/ticket/id/${ticketId}`,
       {
         withCredentials: true, // Include cookies (JWT token)
       }

@@ -10,6 +10,7 @@ import { roleGuard } from './core/guards/role.guard';
 import { SearchComponent } from './features/search/search.component';
 import { BookingComponent } from './features/booking/booking.component';
 import { BookingsComponent } from './features/my-bookings/bookings.component';
+import { TicketComponent } from './features/ticket/ticket.component';
 
 export const routes: Routes = [
   {path:'home',component:HomeComponent},
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'search', component: SearchComponent },
   { path: 'booking/:scheduleId', component: BookingComponent, canActivate: [authGuard] },
   { path: 'bookings', component: BookingsComponent, canActivate: [authGuard] },
+  { path: 'ticket/:ticketId', component: TicketComponent, canActivate: [authGuard] },
   {
     path: 'admin',
     component: BoardAdminComponent,
