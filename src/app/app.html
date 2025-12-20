@@ -1,5 +1,5 @@
 <div id="app" class="min-h-screen flex flex-col">
-  <nav class="bg-white border-b border-gray-200 shadow-sm">
+  <nav class="bg-white sticky top-0 border-b border-gray-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Brand -->
@@ -56,7 +56,7 @@
                class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
               {{ username() }}
             </a>
-            <button (click)="logout(); $event.preventDefault()"
+            <button (click)="openLogoutDialog(); $event.preventDefault()"
                     class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors">
               Logout
             </button>
@@ -112,7 +112,7 @@
                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
               {{ username() }}
             </a>
-            <button (click)="logout(); $event.preventDefault()"
+            <button (click)="openLogoutDialog(); $event.preventDefault()"
                     class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors">
               Logout
             </button>
@@ -126,4 +126,15 @@
   <main class="flex-1">
     <router-outlet />
   </main>
+
+  <!-- Logout Confirmation Dialog -->
+  <app-confirmation-dialog
+    [show]="showLogoutDialog()"
+    [title]="'Confirm Logout'"
+    [message]="'Are you sure you want to logout? You will need to login again to access your account.'"
+    [confirmText]="'Logout'"
+    [cancelText]="'Cancel'"
+    (confirm)="confirmLogout()"
+    (cancel)="closeLogoutDialog()">
+  </app-confirmation-dialog>
 </div>

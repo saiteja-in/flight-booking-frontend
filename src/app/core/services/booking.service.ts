@@ -46,6 +46,11 @@ export interface TicketResponse {
   issuedAt: string;
 }
 
+export interface ApiResponse {
+  message: string;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -76,6 +81,15 @@ export class BookingService {
   getTicketById(ticketId: string): Observable<TicketResponse> {
     return this.http.get<TicketResponse>(
       `${this.baseUrl}/ticket/id/${ticketId}`,
+      {
+        withCredentials: true, // Include cookies (JWT token)
+      }
+    );
+  }
+
+  cancelBooking(pnr: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(
+      `${this.baseUrl}/booking/cancel/${pnr}`,
       {
         withCredentials: true, // Include cookies (JWT token)
       }

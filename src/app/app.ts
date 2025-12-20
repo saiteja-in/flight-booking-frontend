@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { StorageService } from './core/services/storage.service';
 import { AuthService } from './core/services/auth.service';
 import { EventBusService } from './core/services/event-bus.service';
+import { ConfirmationDialogComponent } from './shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ConfirmationDialogComponent],
   templateUrl: './app.html',
 })
 export class App implements OnInit, OnDestroy {
@@ -18,6 +19,7 @@ export class App implements OnInit, OnDestroy {
 
   eventBusSub?: Subscription;
   mobileMenuOpen = signal(false);
+  showLogoutDialog = signal(false);
 
   // Computed signals for reactive state
   readonly isLoggedIn = computed(() => this.storageService.isLoggedIn());
@@ -50,6 +52,19 @@ export class App implements OnInit, OnDestroy {
     if (this.eventBusSub) {
       this.eventBusSub.unsubscribe();
     }
+  }
+
+  openLogoutDialog(): void {
+    this.showLogoutDialog.set(true);
+  }
+
+  closeLogoutDialog(): void {
+    this.showLogoutDialog.set(false);
+  }
+
+  confirmLogout(): void {
+    this.logout();
+    this.closeLogoutDialog();
   }
 
   logout(): void {

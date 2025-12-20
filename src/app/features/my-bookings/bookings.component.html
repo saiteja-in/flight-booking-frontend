@@ -85,12 +85,12 @@
             </div>
 
             <!-- Schedule ID -->
-            <div class="mb-4">
+            <!-- <div class="mb-4">
               <p class="mb-2 text-sm font-medium text-slate-700">Flight Schedule ID:</p>
               <span class="rounded-md bg-blue-50 px-3 py-1 text-sm font-mono text-blue-700">
                 {{ booking.scheduleId }}
               </span>
-            </div>
+            </div> -->
 
             <!-- Passengers -->
             <div>
@@ -127,15 +127,21 @@
 
             <!-- Footer -->
             <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4">
-              <p class="text-xs text-slate-500">
+              <!-- <p class="text-xs text-slate-500">
                 Last updated: {{ formatDate(booking.updatedAt) }}
-              </p>
+              </p> -->
+              <div></div>
               <div class="flex gap-2">
                 @if (booking.ticketId && booking.status === 'CONFIRMED') {
                   <button
                     (click)="viewTicket(booking.ticketId)"
                     class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors">
                     View Ticket
+                  </button>
+                  <button
+                    (click)="openCancelDialog(booking.pnr)"
+                    class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors">
+                    Cancel Booking
                   </button>
                 } @else if (booking.ticketId && booking.status === 'CANCELLED') {
                   <button
@@ -150,6 +156,17 @@
         }
       </div>
     }
+
+    <!-- Confirmation Dialog -->
+    <app-confirmation-dialog
+      [show]="showCancelDialog()"
+      [title]="'Cancel Booking'"
+      [message]="'Are you sure you want to cancel this booking? This action cannot be undone and your seats will be released.'"
+      [confirmText]="'Cancel Booking'"
+      [cancelText]="'Keep Booking'"
+      (confirm)="confirmCancel()"
+      (cancel)="closeDialog()">
+    </app-confirmation-dialog>
   </div>
 </div>
 

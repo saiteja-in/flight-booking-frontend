@@ -2,11 +2,12 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BookingService, BookingResponse } from '../../core/services/booking.service';
+import { ConfirmationDialogComponent } from '../../shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-bookings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmationDialogComponent],
   templateUrl: './bookings.component.html',
   styleUrl: './bookings.component.css',
 })
@@ -17,6 +18,9 @@ export class BookingsComponent implements OnInit {
   readonly bookings = signal<BookingResponse[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly showCancelDialog = signal(false);
+  readonly selectedPnr = signal<string | null>(null);
+  readonly canceling = signal(false);
 
   ngOnInit() {
     this.loadBookings();
@@ -62,6 +66,43 @@ export class BookingsComponent implements OnInit {
     if (ticketId) {
       this.router.navigate(['/ticket', ticketId]);
     }
+  }
+
+  openCancelDialog(pnr: string) {
+    this.selectedPnr.set(pnr);
+    this.showCancelDialog.set(true);
+  }
+
+  closeDialog() {
+    this.showCancelDialog.set(false);
+    this.selectedPnr.set(null);
+  }
+
+  confirmCancel() {
+    const pnr = this.selectedPnr();
+    if (!pnr) {
+      return;
+    }
+
+    this.canceling.set(true);
+    this.bookingService.cancelBooking(pnr).subscribe({
+      next: (response) => {
+        this.canceling.set(false);
+        this.closeDialog();
+        // Reload bookings to reflect the cancellation
+        this.loadBookings();
+        // Optionally show success message
+        this.error.set(null);
+      },
+      error: (err) => {
+        this.canceling.set(false);
+        this.error.set(
+          err?.error?.message ??
+            err?.message ??
+            'Failed to cancel booking. Please try again.'
+        );
+      },
+    });
   }
 }
 
