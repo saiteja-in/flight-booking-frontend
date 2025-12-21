@@ -8,7 +8,6 @@ import { AdminService, FlightScheduleCreateRequest, FlightResponse } from '../..
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create-schedule.component.html',
-  styleUrl: './create-schedule.component.css',
 })
 export class CreateScheduleComponent implements OnInit {
   private readonly adminService = inject(AdminService);

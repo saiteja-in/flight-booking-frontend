@@ -24,7 +24,10 @@ export class AuthService {
         username,
         password,
       },
-      httpOptions
+      {
+        ...httpOptions,
+        withCredentials: true // Include cookies (JWT token)
+      }
     ).pipe(
       map((response: JwtResponse) => {
         // Store user and token separately
@@ -49,7 +52,10 @@ export class AuthService {
     return this.http.post(
       AUTH_API + '/signup',
       body,
-      httpOptions
+      {
+        ...httpOptions,
+        withCredentials: true // Include cookies for consistency
+      }
     );
   }
 

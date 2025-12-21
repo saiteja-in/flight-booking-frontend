@@ -9,7 +9,6 @@ import { Airline, Airport, AIRLINE_OPTIONS, AIRPORT_OPTIONS, AIRPORT_NAMES } fro
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create-flight.component.html',
-  styleUrl: './create-flight.component.css',
 })
 export class CreateFlightComponent {
   private readonly adminService = inject(AdminService);

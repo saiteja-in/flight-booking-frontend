@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
+import { passwordValidator } from '../../core/validators/password.validator';
 
 @Component({
   selector: 'app-register',
@@ -24,12 +25,16 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, passwordValidator()]]
     });
   }
 
   onSubmit(): void {
     if (this.registerForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.registerForm.controls).forEach(key => {
+        this.registerForm.get(key)?.markAsTouched();
+      });
       return;
     }
 
@@ -46,7 +51,8 @@ export class RegisterComponent {
         }, 2000);
       },
       error: err => {
-        this.errorMessage.set(err.error?.message || 'Registration failed');
+        const errorMsg = err.error?.error || err.error?.message || 'Registration failed. Please check your input and try again.';
+        this.errorMessage.set(errorMsg);
         this.isSignUpFailed.set(true);
       }
     });

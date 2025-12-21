@@ -42,7 +42,7 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
   constructor() {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
 
@@ -152,6 +152,10 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.loginForm.controls).forEach(key => {
+        this.loginForm.get(key)?.markAsTouched();
+      });
       return;
     }
 
@@ -166,7 +170,8 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(['/home']);
       },
       error: err => {
-        this.errorMessage.set(err.error?.message || 'Login failed');
+        const errorMsg = err.error?.error || err.error?.message || 'Login failed. Please check your credentials and try again.';
+        this.errorMessage.set(errorMsg);
         this.isLoginFailed.set(true);
       }
     });

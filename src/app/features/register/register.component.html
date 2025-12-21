@@ -84,13 +84,17 @@
                      (registerForm.get('password')?.invalid && registerForm.get('password')?.touched ? 'border-red-500 ring-red-200' : '')"
             placeholder="Enter your password"
           />
+          <!-- Password Requirements Helper Text -->
+          <p class="mt-1.5 text-xs text-gray-500">
+            Password must be at least 8 characters and contain uppercase, lowercase, number, and special character (!@#$%^&*)
+          </p>
+          <!-- Password Validation Error -->
           @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
           <p class="mt-1.5 text-sm text-red-600">
             @if (registerForm.get('password')?.errors?.['required']) {
             Password is required
-            }
-            @if (registerForm.get('password')?.errors?.['minlength']) {
-            Password must be at least 6 characters
+            } @else if (registerForm.get('password')?.errors?.['password']) {
+            Password must be at least 8 characters and contain uppercase, lowercase, number, and special character
             }
           </p>
           }
@@ -99,7 +103,8 @@
         <!-- Error Message -->
         @if (isSignUpFailed()) {
         <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-          Signup failed: {{ errorMessage() }}
+          <p class="font-medium mb-1">Signup failed:</p>
+          <p>{{ errorMessage() }}</p>
         </div>
         }
 
