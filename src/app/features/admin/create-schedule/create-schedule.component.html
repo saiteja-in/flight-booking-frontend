@@ -1,0 +1,170 @@
+<div class="rounded-xl bg-white p-6 shadow-md">
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-800">
+      <div class="flex items-start">
+        <svg class="mr-3 h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p class="font-medium">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Success Message -->
+  @if (success()) {
+    <div class="mb-4 rounded-lg bg-green-50 p-4 text-green-800">
+      <div class="flex items-start">
+        <svg class="mr-3 h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p class="font-medium">{{ success() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Flight Number -->
+    <div>
+      <label for="flightNumber" class="block text-sm font-medium text-slate-700 mb-2">
+        Flight <span class="text-red-500">*</span>
+      </label>
+      @if (loadingFlights()) {
+        <div class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm bg-slate-50 flex items-center">
+          <svg class="animate-spin h-4 w-4 text-slate-600 mr-2" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Loading flights...
+        </div>
+      } @else {
+        <select
+          id="flightNumber"
+          formControlName="flightNumber"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="scheduleForm.get('flightNumber')?.invalid && scheduleForm.get('flightNumber')?.touched">
+          <option value="">Select Flight</option>
+          @for (flight of flights(); track flight.id) {
+            <option [value]="flight.flightNumber">{{ getFlightDisplay(flight) }}</option>
+          }
+        </select>
+      }
+      @if (getFieldError('flightNumber')) {
+        <p class="mt-1 text-sm text-red-600">{{ getFieldError('flightNumber') }}</p>
+      }
+      @if (flights().length === 0 && !loadingFlights()) {
+        <p class="mt-1 text-xs text-slate-500">No flights available. Please create a flight first.</p>
+      }
+    </div>
+
+    <!-- Flight Date -->
+    <div>
+      <label for="flightDate" class="block text-sm font-medium text-slate-700 mb-2">
+        Flight Date <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="date"
+        id="flightDate"
+        formControlName="flightDate"
+        [min]="minDate"
+        class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [class.border-red-500]="scheduleForm.get('flightDate')?.invalid && scheduleForm.get('flightDate')?.touched">
+      @if (getFieldError('flightDate')) {
+        <p class="mt-1 text-sm text-red-600">{{ getFieldError('flightDate') }}</p>
+      }
+    </div>
+
+    <!-- Departure and Arrival Times -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Departure Time -->
+      <div>
+        <label for="departureTime" class="block text-sm font-medium text-slate-700 mb-2">
+          Departure Time <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="time"
+          id="departureTime"
+          formControlName="departureTime"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="scheduleForm.get('departureTime')?.invalid && scheduleForm.get('departureTime')?.touched">
+        @if (getFieldError('departureTime')) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('departureTime') }}</p>
+        }
+      </div>
+
+      <!-- Arrival Time -->
+      <div>
+        <label for="arrivalTime" class="block text-sm font-medium text-slate-700 mb-2">
+          Arrival Time <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="time"
+          id="arrivalTime"
+          formControlName="arrivalTime"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="scheduleForm.get('arrivalTime')?.invalid && scheduleForm.get('arrivalTime')?.touched">
+        @if (getFieldError('arrivalTime')) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('arrivalTime') }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Form-level error for time validation -->
+    @if (getFormError()) {
+      <div class="rounded-lg bg-red-50 p-3">
+        <p class="text-sm text-red-600">{{ getFormError() }}</p>
+      </div>
+    }
+
+    <!-- Fare -->
+    <div>
+      <label for="fare" class="block text-sm font-medium text-slate-700 mb-2">
+        Fare (₹) <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="number"
+        id="fare"
+        formControlName="fare"
+        min="1.00"
+        step="0.01"
+        class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [class.border-red-500]="scheduleForm.get('fare')?.invalid && scheduleForm.get('fare')?.touched">
+      @if (getFieldError('fare')) {
+        <p class="mt-1 text-sm text-red-600">{{ getFieldError('fare') }}</p>
+      }
+      <p class="mt-1 text-xs text-slate-500">Minimum: ₹1.00</p>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-end gap-3 pt-6 border-t border-slate-200">
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="loading() || scheduleForm.invalid || flights().length === 0"
+        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+        @if (loading()) {
+          <span class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Creating...
+          </span>
+        } @else {
+          Create Schedule
+        }
+      </button>
+    </div>
+  </form>
+</div>
+

@@ -1,0 +1,165 @@
+<div class="rounded-xl bg-white p-6 shadow-md">
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-800">
+      <div class="flex items-start">
+        <svg class="mr-3 h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p class="font-medium">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Success Message -->
+  @if (success()) {
+    <div class="mb-4 rounded-lg bg-green-50 p-4 text-green-800">
+      <div class="flex items-start">
+        <svg class="mr-3 h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p class="font-medium">{{ success() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <form [formGroup]="flightForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Flight Number -->
+    <div>
+      <label for="flightNumber" class="block text-sm font-medium text-slate-700 mb-2">
+        Flight Number <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        id="flightNumber"
+        formControlName="flightNumber"
+        class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="e.g., AI101"
+        [class.border-red-500]="flightForm.get('flightNumber')?.invalid && flightForm.get('flightNumber')?.touched">
+      @if (getFieldError('flightNumber')) {
+        <p class="mt-1 text-sm text-red-600">{{ getFieldError('flightNumber') }}</p>
+      }
+    </div>
+
+    <!-- Airline -->
+    <div>
+      <label for="airline" class="block text-sm font-medium text-slate-700 mb-2">
+        Airline <span class="text-red-500">*</span>
+      </label>
+      <select
+        id="airline"
+        formControlName="airline"
+        class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [class.border-red-500]="flightForm.get('airline')?.invalid && flightForm.get('airline')?.touched">
+        <option value="">Select Airline</option>
+        @for (airline of airlines; track airline) {
+          <option [value]="airline">{{ airline.replace('_', ' ') }}</option>
+        }
+      </select>
+      @if (getFieldError('airline')) {
+        <p class="mt-1 text-sm text-red-600">{{ getFieldError('airline') }}</p>
+      }
+    </div>
+
+    <!-- Origin and Destination Airports -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Origin Airport -->
+      <div>
+        <label for="originAirport" class="block text-sm font-medium text-slate-700 mb-2">
+          Origin Airport <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="originAirport"
+          formControlName="originAirport"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="flightForm.get('originAirport')?.invalid && flightForm.get('originAirport')?.touched">
+          <option value="">Select Origin</option>
+          @for (airport of airports; track airport) {
+            <option [value]="airport">{{ getAirportLabel(airport) }}</option>
+          }
+        </select>
+        @if (getFieldError('originAirport')) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('originAirport') }}</p>
+        }
+      </div>
+
+      <!-- Destination Airport -->
+      <div>
+        <label for="destinationAirport" class="block text-sm font-medium text-slate-700 mb-2">
+          Destination Airport <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="destinationAirport"
+          formControlName="destinationAirport"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="flightForm.get('destinationAirport')?.invalid && flightForm.get('destinationAirport')?.touched">
+          <option value="">Select Destination</option>
+          @for (airport of airports; track airport) {
+            <option [value]="airport">{{ getAirportLabel(airport) }}</option>
+          }
+        </select>
+        @if (getFieldError('destinationAirport')) {
+          <p class="mt-1 text-sm text-red-600">{{ getFieldError('destinationAirport') }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Form-level error for same airport -->
+    @if (getFormError()) {
+      <div class="rounded-lg bg-red-50 p-3">
+        <p class="text-sm text-red-600">{{ getFormError() }}</p>
+      </div>
+    }
+
+    <!-- Seat Capacity -->
+    <div>
+      <label for="seatCapacity" class="block text-sm font-medium text-slate-700 mb-2">
+        Seat Capacity <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="number"
+        id="seatCapacity"
+        formControlName="seatCapacity"
+        min="1"
+        max="1000"
+        class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [class.border-red-500]="flightForm.get('seatCapacity')?.invalid && flightForm.get('seatCapacity')?.touched">
+      @if (getFieldError('seatCapacity')) {
+        <p class="mt-1 text-sm text-red-600">{{ getFieldError('seatCapacity') }}</p>
+      }
+      <p class="mt-1 text-xs text-slate-500">Minimum: 1, Maximum: 1000</p>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-end gap-3 pt-6 border-t border-slate-200">
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="loading() || flightForm.invalid"
+        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+        @if (loading()) {
+          <span class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Creating...
+          </span>
+        } @else {
+          Create Flight
+        }
+      </button>
+    </div>
+  </form>
+</div>
+
