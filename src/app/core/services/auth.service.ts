@@ -63,6 +63,21 @@ export class AuthService {
     return this.http.post(AUTH_API + '/signout', {}, httpOptions);
   }
 
+  changePassword(
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string
+  ): Observable<{ message: string; status?: string }> {
+    return this.http.post<{ message: string; status?: string }>(
+      AUTH_API + '/change-password',
+      { currentPassword, newPassword, confirmPassword },
+      {
+        ...httpOptions,
+        withCredentials: true,
+      }
+    );
+  }
+
   validateToken(): Observable<boolean> {
     return this.http.get<{ message: string }>(AUTH_API + '/validate', {
       ...httpOptions,
