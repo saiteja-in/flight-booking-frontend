@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BookingService, BookingResponse } from '../../core/services/booking.service';
@@ -21,6 +21,28 @@ export class BookingsComponent implements OnInit {
   readonly showCancelDialog = signal(false);
   readonly selectedPnr = signal<string | null>(null);
   readonly canceling = signal(false);
+  readonly filterStatus = signal<'ALL' | 'CONFIRMED' | 'CANCELLED'>('ALL');
+
+  // Computed signal to filter bookings based on the selected filter
+  readonly filteredBookings = computed(() => {
+    const filter = this.filterStatus();
+    const allBookings = this.bookings();
+
+    if (filter === 'ALL') {
+      return allBookings;
+    }
+
+    return allBookings.filter(booking => booking.status === filter);
+  });
+
+  // Computed signals for booking counts
+  readonly confirmedCount = computed(() => {
+    return this.bookings().filter(booking => booking.status === 'CONFIRMED').length;
+  });
+
+  readonly cancelledCount = computed(() => {
+    return this.bookings().filter(booking => booking.status === 'CANCELLED').length;
+  });
 
   ngOnInit() {
     this.loadBookings();
@@ -103,6 +125,10 @@ export class BookingsComponent implements OnInit {
         );
       },
     });
+  }
+
+  setFilter(status: 'ALL' | 'CONFIRMED' | 'CANCELLED') {
+    this.filterStatus.set(status);
   }
 }
 
