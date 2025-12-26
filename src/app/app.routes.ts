@@ -4,7 +4,6 @@ import { Login } from './features/login/login';
 import { RegisterComponent } from './features/register/register.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { authGuard } from './core/guards/auth.guard';
-import { BoardUserComponent } from './features/board-user/board-user.component';
 import { BoardAdminComponent } from './features/board-admin/board-admin.component';
 import { roleGuard } from './core/guards/role.guard';
 import { SearchComponent } from './features/search/search.component';
@@ -17,8 +16,15 @@ export const routes: Routes = [
   {path:'login',component:Login},
   {path:'oauth2/callback',component:Login},
   {path:'register',component:RegisterComponent},
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
+  },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-  { path: 'user', component: BoardUserComponent, canActivate: [authGuard] },
   { path: 'search', component: SearchComponent },
   { path: 'booking/:scheduleId', component: BookingComponent, canActivate: [authGuard] },
   { path: 'bookings', component: BookingsComponent, canActivate: [authGuard] },

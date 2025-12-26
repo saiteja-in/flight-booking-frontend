@@ -108,6 +108,28 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      AUTH_API + '/forgot-password',
+      { email },
+      {
+        ...httpOptions,
+        withCredentials: true
+      }
+    );
+  }
+
+  resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      AUTH_API + '/reset-password',
+      { token, newPassword, confirmPassword },
+      {
+        ...httpOptions,
+        withCredentials: true
+      }
+    );
+  }
+
   // Expose storage service signals for convenience
   get currentUser() {
     return this.storageService.currentUser;

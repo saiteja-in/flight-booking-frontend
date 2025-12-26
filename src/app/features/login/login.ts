@@ -191,5 +191,9 @@ export class Login implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
+
+  navigateToForgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
+  }
 }
 

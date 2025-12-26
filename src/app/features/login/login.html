@@ -61,6 +61,14 @@
           }
         </div>
 
+        <!-- Forgot Password Link -->
+        <div class="flex justify-end">
+          <a (click)="navigateToForgotPassword()" 
+             class="text-sm text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+            Forgot Password?
+          </a>
+        </div>
+
         <!-- Error Message -->
         @if (isLoginFailed()) {
         <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
